@@ -1,7 +1,7 @@
 // A simple service worker for caching the app shell.
 
 // v1: Initial release
-const CACHE_NAME = 'bizim-cache-v1';
+const CACHE_NAME = 'bizim-cache-v2';
 const urlsToCache = [
   '/', // This caches the root URL
   '/index.html' // This explicitly caches the main HTML file
