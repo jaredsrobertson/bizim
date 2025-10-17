@@ -1,51 +1,60 @@
-// A simple service worker for caching the app shell.
-
-// v1: Initial release
-const CACHE_NAME = 'bizim-cache-v2';
+// v2: Cache essential assets for a true offline experience
+const CACHE_NAME = 'bizim-cache-v3';
 const urlsToCache = [
-  '/', // This caches the root URL
-  '/index.html' // This explicitly caches the main HTML file
+  // App Shell
+  '/',
+  '/index.html',
+  '/manifest.json',
+
+  // Icons (from your updated manifest)
+  'https://ui-avatars.com/api/?name=B&size=192&background=3b82f6&color=ffffff',
+  'https://ui-avatars.com/api/?name=B&size=512&background=3b82f6&color=ffffff',
+
+  // Styles & Fonts
+  'https://cdn.tailwindcss.com',
+  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+  
+  // Firebase Scripts
+  'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js',
+  'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js',
+  'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js'
 ];
 
-// Installation event: fires when the service worker is first installed.
+// Installation event
 self.addEventListener('install', event => {
-  // We wait until the installation is complete.
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache');
-        // Add all the essential files ('app shell') to the cache.
+        console.log('Opened cache and caching app shell');
         return cache.addAll(urlsToCache);
       })
   );
 });
 
-// Fetch event: fires for every network request the page makes.
+// Fetch event: Cache-first strategy
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // If the request is found in the cache, return the cached response.
+        // Return cached response if found
         if (response) {
           return response;
         }
-        // If the request is not in the cache, fetch it from the network.
+        // Otherwise, fetch from network
         return fetch(event.request);
-      }
-    )
+      })
   );
 });
 
-// Activation event: fires when the new service worker takes control.
+// Activation event: Clean up old caches
 self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME]; // Only the current cache is whitelisted.
+  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          // If a cache is found that is not in the whitelist, delete it.
-          // This removes old versions of the cache.
           if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
