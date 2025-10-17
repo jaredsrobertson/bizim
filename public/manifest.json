@@ -8,12 +8,12 @@
   "description": "A shared organizer for Büşra and Jared.",
   "icons": [
     {
-      "src": "https://ui-avatars.com/api/?name=B&size=192&background=3b82f6&color=ffffff",
+      "src": "/192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://ui-avatars.com/api/?name=B&size=512&background=3b82f6&color=ffffff",
+      "src": "/512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

@@ -1,19 +1,19 @@
-// v2: Cache essential assets for a true offline experience
-const CACHE_NAME = 'bizim-cache-v3';
+// v3: Caching local icons and essential assets
+const CACHE_NAME = 'bizim-cache-v3'; // <-- Note: I've updated the version name
 const urlsToCache = [
   // App Shell
   '/',
   '/index.html',
   '/manifest.json',
 
-  // Icons (from your updated manifest)
-  'https://ui-avatars.com/api/?name=B&size=192&background=3b82f6&color=ffffff',
-  'https://ui-avatars.com/api/?name=B&size=512&background=3b82f6&color=ffffff',
+  // Local Icons
+  '/192.png',
+  '/512.png',
 
   // Styles & Fonts
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-  
+
   // Firebase Scripts
   'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js',
   'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js',
@@ -36,11 +36,9 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Return cached response if found
         if (response) {
           return response;
         }
-        // Otherwise, fetch from network
         return fetch(event.request);
       })
   );
@@ -54,7 +52,6 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
