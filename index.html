@@ -9,158 +9,119 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Bizim">
     <meta name="theme-color" content="#ffffff">
-
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        .ios-page {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(100%);
-            z-index: 1;
-        }
-        .ios-page.active {
-            transform: translateX(0);
-            z-index: 2;
-        }
-        .ios-header {
-            padding: 16px;
-            padding-top: calc(env(safe-area-inset-top, 0px) + 16px);
-        }
-        .ios-tab-bar {
-            padding-bottom: env(safe-area-inset-bottom, 0px);
-        }
-        .tab-button.active svg,
-        .tab-button.active span {
-            color: #3b82f6; /* blue-500 */
-        }
-        .calendar-day.has-event::after {
-            content: '';
-            display: block;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background-color: #3b82f6; /* blue-500 */
-            margin: 2px auto 0;
-        }
-        .calendar-day.today .day-number {
-            background-color: #3b82f6; /* blue-500 */
-            color: white;
-            border-radius: 50%;
-        }
-        .ios-list-item {
-            border-bottom: 1px solid #e5e7eb; /* gray-200 */
-            transition: opacity 0.3s ease-out;
-        }
-        .ios-list-item:last-child {
-            border-bottom: none;
-        }
-        .ios-modal-backdrop {
-            background-color: rgba(0,0,0,0.4);
-            transition: opacity 0.3s ease-out;
-        }
-        .ios-modal-content {
-            transform: translateY(100%);
-            transition: transform 0.3s ease-out;
-        }
-        .ios-modal-backdrop.visible {
-            opacity: 1;
-        }
-        .ios-modal-backdrop.visible .ios-modal-content {
-            transform: translateY(0);
-        }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .ios-page { position: absolute; inset: 0; transition: transform 0.3s; transform: translateX(100%); z-index: 1; }
+        .ios-page.active { transform: translateX(0); z-index: 2; }
+        .tab-button.active svg, .tab-button.active span { color: #3b82f6; }
+        .calendar-day.has-event::after { content: ''; display: block; width: 5px; height: 5px; border-radius: 50%; background: #3b82f6; margin: 2px auto 0; }
+        .calendar-day.today .day-number { background: #3b82f6; color: white; border-radius: 50%; }
+        .ios-list-item { border-bottom: 1px solid #e5e7eb; }
+        .ios-list-item:last-child { border-bottom: none; }
+        .ios-modal-backdrop { background: rgba(0,0,0,0.4); transition: opacity 0.3s; }
+        .ios-modal-content { transform: translateY(100%); transition: transform 0.3s; }
+        .ios-modal-backdrop.visible { opacity: 1; }
+        .ios-modal-backdrop.visible .ios-modal-content { transform: translateY(0); }
+        @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .install-banner { animation: slideDown 0.4s; }
     </style>
 </head>
 <body class="bg-gray-50 h-screen overflow-hidden">
-
-    <div id="splash-screen" class="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center transition-opacity duration-500 ease-in-out">
+    <div id="splash-screen" class="absolute inset-0 bg-white z-50 flex flex-col items-center justify-center transition-opacity duration-500">
         <h1 class="text-8xl font-extrabold text-gray-800">Bizim</h1>
         <p class="mt-2 text-lg text-gray-500">Büşra + Jared</p>
     </div>
 
-    <div id="app-shell" class="h-full w-full max-w-lg mx-auto bg-white flex flex-col relative overflow-hidden shadow-2xl">
+    <div id="install-banner" class="hidden fixed top-0 left-0 right-0 z-50 install-banner">
+        <div class="max-w-lg mx-auto bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 shadow-lg">
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 flex-1">
+                    <svg class="w-10 h-10 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    <div>
+                        <p class="font-semibold text-sm">Install Bizim App</p>
+                        <p class="text-xs text-blue-100">Add to home screen for quick access</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button id="install-button" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-blue-50">Install</button>
+                    <button id="dismiss-install" class="text-white hover:text-blue-100 p-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div id="app-shell" class="h-full w-full max-w-lg mx-auto bg-white flex flex-col relative overflow-hidden shadow-2xl">
         <div id="loading-overlay" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-40 flex items-center justify-center">
             <div class="text-center">
-                <svg class="animate-spin h-8 w-8 text-blue-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+                <svg class="animate-spin h-8 w-8 text-blue-500 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
                 <p class="mt-2 text-gray-600 font-medium">Connecting...</p>
             </div>
         </div>
 
-        <div id="main-view" class="h-full w-full flex-1 flex flex-col">
+        <div class="h-full flex-1 flex flex-col">
             <main class="flex-1 overflow-y-auto relative bg-gray-50">
                 <div id="page-shopping" class="ios-page active">
-                    <header class="ios-header bg-white border-b border-gray-200">
+                    <header class="p-4 bg-white border-b border-gray-200">
                         <h1 class="text-3xl font-bold">Shopping List</h1>
                     </header>
                     <div class="p-4 space-y-4">
                         <div class="relative flex items-center">
-                            <input type="text" id="shopping-input" placeholder="Add item..." class="w-full bg-white p-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-blue-500 transition pr-20">
-                            <button id="add-shopping-btn" class="absolute right-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Add</button>
+                            <input type="text" id="shopping-input" placeholder="Add item..." class="w-full bg-white p-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none pr-20">
+                            <button id="add-shopping-btn" class="absolute right-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg">Add</button>
                         </div>
-                        <div id="shopping-list-container" class="bg-white rounded-xl border-2 border-gray-200">
+                        <div class="bg-white rounded-xl border-2 border-gray-200">
                             <div id="shopping-list"></div>
-                            <button id="clear-shopping-btn" class="w-full text-center py-3 text-blue-500 font-medium text-sm border-t border-gray-200">Clear Completed</button>
+                            <button id="clear-shopping-btn" class="w-full py-3 text-blue-500 font-medium text-sm border-t border-gray-200">Clear Completed</button>
                         </div>
                     </div>
                 </div>
 
                 <div id="page-todos" class="ios-page">
-                    <header class="ios-header bg-white border-b border-gray-200">
+                    <header class="p-4 bg-white border-b border-gray-200">
                         <h1 class="text-3xl font-bold">To-Do List</h1>
                     </header>
                     <div class="p-4 space-y-4">
                         <div class="relative flex items-center">
-                            <input type="text" id="todo-input" placeholder="Add task..." class="w-full bg-white p-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-blue-500 transition pr-20">
-                            <button id="add-todo-btn" class="absolute right-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Add</button>
+                            <input type="text" id="todo-input" placeholder="Add task..." class="w-full bg-white p-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none pr-20">
+                            <button id="add-todo-btn" class="absolute right-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg">Add</button>
                         </div>
-                        <div id="todo-list-container" class="bg-white rounded-xl border-2 border-gray-200">
-                           <div id="todo-list"></div>
-                           <button id="clear-todos-btn" class="w-full text-center py-3 text-blue-500 font-medium text-sm border-t border-gray-200">Clear Completed</button>
+                        <div class="bg-white rounded-xl border-2 border-gray-200">
+                            <div id="todo-list"></div>
+                            <button id="clear-todos-btn" class="w-full py-3 text-blue-500 font-medium text-sm border-t border-gray-200">Clear Completed</button>
                         </div>
                     </div>
                 </div>
                 
                 <div id="page-calendar" class="ios-page bg-white">
-                    <header class="ios-header">
+                    <header class="p-4">
                         <h1 class="text-3xl font-bold">Calendar</h1>
                     </header>
                     <div class="px-4">
                         <div class="flex justify-between items-center mb-4">
-                            <button id="prev-month-btn" class="p-2 rounded-full hover:bg-gray-100"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
-                            <h2 id="month-year-display" class="text-lg font-semibold w-32 text-center"></h2>
-                            <button id="next-month-btn" class="p-2 rounded-full hover:bg-gray-100"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
+                            <button id="prev-month-btn" class="p-2 rounded-full hover:bg-gray-100"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+                            <h2 id="month-year-display" class="text-lg font-semibold"></h2>
+                            <button id="next-month-btn" class="p-2 rounded-full hover:bg-gray-100"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
                         </div>
                         <div id="calendar-grid" class="grid grid-cols-7 gap-y-2 text-center"></div>
                     </div>
                 </div>
             </main>
 
-            <nav class="ios-tab-bar bg-gray-100/80 backdrop-blur-lg border-t border-gray-200 grid grid-cols-3 text-center">
+            <nav class="bg-gray-100/80 backdrop-blur-lg border-t border-gray-200 grid grid-cols-3">
                 <button data-page="shopping" class="tab-button py-2 active">
-                    <svg class="w-7 h-7 mx-auto text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <svg class="w-7 h-7 mx-auto text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     <span class="text-xs text-gray-500 font-medium">Shopping</span>
                 </button>
                 <button data-page="todos" class="tab-button py-2">
-                    <svg class="w-7 h-7 mx-auto text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    <svg class="w-7 h-7 mx-auto text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                     <span class="text-xs text-gray-500 font-medium">To-Do</span>
                 </button>
-                 <button data-page="calendar" class="tab-button py-2">
-                    <svg class="w-7 h-7 mx-auto text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <button data-page="calendar" class="tab-button py-2">
+                    <svg class="w-7 h-7 mx-auto text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     <span class="text-xs text-gray-500 font-medium">Calendar</span>
                 </button>
             </nav>
@@ -173,8 +134,8 @@
             <h3 class="text-xl font-semibold mb-4 text-center">Events for <span id="modal-date-display"></span></h3>
             <div id="modal-event-list" class="space-y-2 mb-4 max-h-48 overflow-y-auto"></div>
             <div class="relative flex items-center">
-                 <input type="text" id="event-input" placeholder="Add new event..." class="w-full bg-gray-100 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none pr-20">
-                 <button id="add-event-btn" class="absolute right-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg transition-colors">Add</button>
+                <input type="text" id="event-input" placeholder="Add new event..." class="w-full bg-gray-100 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none pr-20">
+                <button id="add-event-btn" class="absolute right-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg">Add</button>
             </div>
         </div>
     </div>
@@ -184,310 +145,138 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Splash Screen Logic ---
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const splashScreen = document.getElementById('splash-screen');
-                if (splashScreen) {
-                    splashScreen.style.opacity = '0';
-                    setTimeout(() => {
-                        splashScreen.style.display = 'none';
-                    }, 500); // Match CSS transition duration
-                }
-            }, 3000); // 3 seconds
+        let deferredPrompt;
+        const banner = document.getElementById('install-banner');
+        
+        window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; banner.classList.remove('hidden'); });
+        document.getElementById('install-button').addEventListener('click', async () => {
+            if (!deferredPrompt) return alert('To install:\n\niOS: Tap Share → Add to Home Screen\nAndroid: Check browser menu for Install App');
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            banner.classList.add('hidden');
         });
+        document.getElementById('dismiss-install').addEventListener('click', () => banner.classList.add('hidden'));
+        window.addEventListener('appinstalled', () => { banner.classList.add('hidden'); deferredPrompt = null; });
 
-        // --- PWA Service Worker Registration ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(registration => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }).catch(err => {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
-            });
-        }
+        setTimeout(() => { const s = document.getElementById('splash-screen'); s.style.opacity = '0'; setTimeout(() => s.style.display = 'none', 500); }, 3000);
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 
-        // --- Firebase Config ---
-        const firebaseConfig = {
+        const app = initializeApp({
             apiKey: "AIzaSyAyBhG0QnrpjO7sdkTZjo445HAnTcTibT4",
             authDomain: "bizim-d84aa.firebaseapp.com",
             projectId: "bizim-d84aa",
             storageBucket: "bizim-d84aa.appspot.com",
             messagingSenderId: "70940381471",
             appId: "1:70940381471:web:ae27b2989fa70ba8db202a"
-        };
-
-        const appId = firebaseConfig.projectId;
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // --- App State ---
-        let userId = null;
-        const spaceId = 'BIZIM_FOR_JARED_AND_BUSRA'; // Hardcoded unique ID
-        let spaceData = null;
-        let unsubscribe = null;
-        let currentDate = new Date();
-        let selectedDateStr = null;
-        let isInitialLoad = true;
-        
-        // --- DOM Elements ---
-        const eventModal = document.getElementById('event-modal');
-        const loadingOverlay = document.getElementById('loading-overlay');
-
-        // --- AUTH & INITIALIZATION ---
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                userId = user.uid;
-                initializeSharedSpace();
-            } else {
-                signInAnonymously(auth).catch(error => {
-                    console.error("Anonymous sign-in failed:", error);
-                    loadingOverlay.innerHTML = `<p class="text-red-500 font-semibold p-4 text-center">Connection failed.<br>Please check Firebase config and auth settings.</p>`;
-                });
-            }
         });
+        const auth = getAuth(app), db = getFirestore(app);
+        let userId, spaceData, currentDate = new Date(), selectedDateStr;
+        const spaceId = 'BIZIM_FOR_JARED_AND_BUSRA';
+        const getRef = () => doc(db, `/artifacts/bizim-d84aa/public/data/bizim_spaces_jared_busra/${spaceId}`);
 
-        // --- SPACE MANAGEMENT ---
-        const getSpaceRef = (id) => doc(db, `/artifacts/${appId}/public/data/bizim_spaces_jared_busra`, id);
+        onAuthStateChanged(auth, user => user ? (userId = user.uid, init()) : signInAnonymously(auth));
 
-        async function initializeSharedSpace() {
-            const spaceRef = getSpaceRef(spaceId);
-            try {
-                const docSnap = await getDoc(spaceRef);
-
-                if (docSnap.exists()) {
-                    if (!docSnap.data().members.includes(userId)) {
-                        await updateDoc(spaceRef, { members: arrayUnion(userId) });
-                    }
-                } else {
-                    const initialData = {
-                        members: [userId],
-                        createdAt: serverTimestamp(),
-                        calendarEvents: [],
-                        shoppingList: [],
-                        todoList: []
-                    };
-                    await setDoc(spaceRef, initialData);
-                }
-                setupSpaceListener(spaceId);
-            } catch (error) {
-                 console.error("Firestore initialization failed:", error);
-                 loadingOverlay.innerHTML = `<p class="text-red-500 font-semibold p-4 text-center">Could not connect to the database.<br>Please check your Firestore security rules.</p>`;
-            }
+        async function init() {
+            const ref = getRef(), snap = await getDoc(ref);
+            if (snap.exists() && !snap.data().members.includes(userId)) await updateDoc(ref, { members: arrayUnion(userId) });
+            else if (!snap.exists()) await setDoc(ref, { members: [userId], createdAt: serverTimestamp(), calendarEvents: [], shoppingList: [], todoList: [] });
+            onSnapshot(ref, doc => { if (doc.exists()) { spaceData = doc.data(); render(); document.getElementById('loading-overlay').style.display = 'none'; } });
         }
 
-        function setupSpaceListener(id) {
-            if (unsubscribe) unsubscribe();
-            unsubscribe = onSnapshot(getSpaceRef(id), (doc) => {
-                if (doc.exists()) {
-                    spaceData = doc.data();
-                    renderAll();
-                    if (isInitialLoad) {
-                        loadingOverlay.style.display = 'none';
-                        isInitialLoad = false;
-                    }
-                } else {
-                    console.error("Shared space document was deleted.");
-                    loadingOverlay.innerHTML = `<p class="text-red-500 font-semibold p-4 text-center">Error: The shared data space was not found.</p>`;
-                    loadingOverlay.style.display = 'flex';
-                }
-            });
-        }
-        
-        // --- UI & RENDER LOGIC ---
-        function renderAll() {
+        function render() {
             if (!spaceData) return;
-            renderCalendar();
+            renderCal();
             renderList('shopping-list', spaceData.shoppingList || [], 'shoppingList');
             renderList('todo-list', spaceData.todoList || [], 'todoList');
         }
 
-        function renderCalendar() {
+        function renderCal() {
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = '';
             document.getElementById('month-year-display').textContent = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-            
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
-            const firstDayOfMonth = (new Date(year, month, 1).getDay() + 7) % 7;
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(day => {
-                grid.innerHTML += `<div class="font-bold text-gray-500 text-sm py-2">${day}</div>`;
-            });
-            
-            for (let i = 0; i < firstDayOfMonth; i++) grid.appendChild(document.createElement('div'));
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayEl = document.createElement('div');
-                const date = new Date(year, month, day);
-                const dateStr = date.toISOString().split('T')[0];
-                
-                dayEl.className = 'calendar-day h-10 flex items-center justify-center cursor-pointer rounded-full';
-                dayEl.innerHTML = `<span class="day-number w-8 h-8 flex items-center justify-center">${day}</span>`;
-                
-                if (date.getTime() === today.getTime()) dayEl.classList.add('today');
-                if (spaceData.calendarEvents?.some(e => e.date === dateStr)) dayEl.classList.add('has-event');
-
-                dayEl.addEventListener('click', () => openEventModal(dateStr));
-                grid.appendChild(dayEl);
+            const year = currentDate.getFullYear(), month = currentDate.getMonth();
+            const today = new Date(); today.setHours(0,0,0,0);
+            const first = new Date(year, month, 1).getDay(), days = new Date(year, month + 1, 0).getDate();
+            ['S','M','T','W','T','F','S'].forEach(d => grid.innerHTML += `<div class="font-bold text-gray-500 text-sm py-2">${d}</div>`);
+            for (let i = 0; i < first; i++) grid.appendChild(document.createElement('div'));
+            for (let day = 1; day <= days; day++) {
+                const el = document.createElement('div'), date = new Date(year, month, day), str = date.toISOString().split('T')[0];
+                el.className = 'calendar-day h-10 flex items-center justify-center cursor-pointer rounded-full';
+                el.innerHTML = `<span class="day-number w-8 h-8 flex items-center justify-center">${day}</span>`;
+                if (date.getTime() === today.getTime()) el.classList.add('today');
+                if (spaceData.calendarEvents?.some(e => e.date === str)) el.classList.add('has-event');
+                el.onclick = () => openModal(str);
+                grid.appendChild(el);
             }
         }
-        
-        function renderList(listElId, data, listName) {
-            const listEl = document.getElementById(listElId);
-            listEl.innerHTML = '';
-            if (!data || data.length === 0) {
-                 listEl.innerHTML = `<p class="text-gray-400 text-center p-4">List is empty.</p>`;
-                 return;
-            }
-            const sortedData = [...data].sort((a, b) => a.id - b.id);
 
-            sortedData.forEach((item) => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'ios-list-item p-3 flex items-center gap-3';
-                itemEl.innerHTML = `
-                    <input type="checkbox" ${item.completed ? 'checked' : ''} class="h-6 w-6 rounded-full border-gray-300 text-blue-500 focus:ring-blue-500 flex-shrink-0">
-                    <span class="flex-grow ${item.completed ? 'line-through text-gray-400' : ''}">${item.text}</span>
-                    <button class="edit-btn p-1 text-gray-400 hover:text-blue-500">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+        function renderList(id, data, name) {
+            const el = document.getElementById(id);
+            if (!data.length) return el.innerHTML = '<p class="text-gray-400 text-center p-4">List is empty.</p>';
+            el.innerHTML = [...data].sort((a,b) => a.id - b.id).map(item => `
+                <div class="ios-list-item p-3 flex items-center gap-3">
+                    <input type="checkbox" ${item.completed?'checked':''} onchange="toggle('${item.id}','${name}')" class="h-6 w-6 rounded-full">
+                    <span class="flex-grow ${item.completed?'line-through text-gray-400':''}">${item.text}</span>
+                    <button onclick="edit('${item.id}','${item.text}','${name}')" class="p-1 text-gray-400 hover:text-blue-500">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"/></svg>
                     </button>
-                    <button class="delete-btn p-1 text-gray-400 hover:text-red-500">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <button onclick="del('${item.id}','${name}')" class="p-1 text-gray-400 hover:text-red-500">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                     </button>
-                `;
-                itemEl.querySelector('input').addEventListener('change', () => toggleItem(item.id, listName));
-                itemEl.querySelector('.edit-btn').addEventListener('click', () => editItem(item.id, item.text, listName));
-                itemEl.querySelector('.delete-btn').addEventListener('click', () => deleteItem(item.id, listName));
-                listEl.appendChild(itemEl);
-            });
+                </div>
+            `).join('');
         }
-        
-        // --- UI INTERACTIONS ---
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const pageId = `page-${button.dataset.page}`;
-                document.querySelectorAll('.ios-page').forEach(page => page.classList.remove('active'));
-                document.getElementById(pageId).classList.add('active');
-                
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-            });
+
+        document.querySelectorAll('.tab-button').forEach(btn => btn.onclick = () => {
+            document.querySelectorAll('.ios-page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page-${btn.dataset.page}`).classList.add('active');
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         });
 
-        // --- DATA UPDATE FUNCTIONS ---
-        const updateSpace = async (data) => updateDoc(getSpaceRef(spaceId), data);
+        const update = data => updateDoc(getRef(), data);
+        window.toggle = (id, name) => update({ [name]: spaceData[name].map(i => i.id === id ? {...i, completed: !i.completed} : i) });
+        window.del = (id, name) => update({ [name]: spaceData[name].filter(i => i.id !== id) });
+        window.edit = (id, text, name) => { const t = prompt("Edit:", text); if (t?.trim()) update({ [name]: spaceData[name].map(i => i.id === id ? {...i, text: t.trim()} : i) }); };
 
-        function addItem(inputId, listName) {
-            if (!spaceData) {
-                console.error("Cannot add item: data not loaded yet.");
-                return;
-            }
-            const input = document.getElementById(inputId);
-            const text = input.value.trim();
+        function add(input, name) {
+            const el = document.getElementById(input), text = el.value.trim();
             if (!text) return;
-            const newItem = { id: Date.now().toString(), text, completed: false };
-            const currentList = spaceData[listName] || [];
-            updateSpace({ [listName]: [...currentList, newItem] });
-            input.value = '';
+            update({ [name]: [...(spaceData[name]||[]), { id: Date.now()+'', text, completed: false }] });
+            el.value = '';
         }
 
-        function toggleItem(itemId, listName) {
-            const newList = (spaceData[listName] || []).map(item => 
-                item.id === itemId ? { ...item, completed: !item.completed } : item
-            );
-            updateSpace({ [listName]: newList });
-        }
-
-        function deleteItem(itemId, listName) {
-            const newList = (spaceData[listName] || []).filter(item => item.id !== itemId);
-            updateSpace({ [listName]: newList });
-        }
-
-        function editItem(itemId, currentText, listName) {
-            const newText = prompt("Edit item:", currentText);
-            if (newText !== null && newText.trim() !== '') {
-                const newList = (spaceData[listName] || []).map(item => 
-                    item.id === itemId ? { ...item, text: newText.trim() } : item
-                );
-                updateSpace({ [listName]: newList });
-            }
-        }
-
-        function clearCompleted(listName) {
-            const newList = (spaceData[listName] || []).filter(item => !item.completed);
-            updateSpace({ [listName]: newList });
-        }
-
-        // Event Listeners for Shopping List
-        document.getElementById('add-shopping-btn').addEventListener('click', () => addItem('shopping-input', 'shoppingList'));
-        document.getElementById('shopping-input').addEventListener('keypress', (e) => e.key === 'Enter' && addItem('shopping-input', 'shoppingList'));
-        document.getElementById('clear-shopping-btn').addEventListener('click', () => clearCompleted('shoppingList'));
-
-        // Event Listeners for To-Do List
-        document.getElementById('add-todo-btn').addEventListener('click', () => addItem('todo-input', 'todoList'));
-        document.getElementById('todo-input').addEventListener('keypress', (e) => e.key === 'Enter' && addItem('todo-input', 'todoList'));
-        document.getElementById('clear-todos-btn').addEventListener('click', () => clearCompleted('todoList'));
-
-        // Calendar Interactions and Modal Logic
-        document.getElementById('prev-month-btn').addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar();
-        });
-        document.getElementById('next-month-btn').addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            renderCalendar();
-        });
+        document.getElementById('add-shopping-btn').onclick = () => add('shopping-input', 'shoppingList');
+        document.getElementById('shopping-input').onkeypress = e => e.key === 'Enter' && add('shopping-input', 'shoppingList');
+        document.getElementById('clear-shopping-btn').onclick = () => update({ shoppingList: spaceData.shoppingList.filter(i => !i.completed) });
         
-        function openEventModal(dateStr) {
-            selectedDateStr = dateStr;
-            const dateObj = new Date(dateStr + 'T12:00:00');
-            document.getElementById('modal-date-display').textContent = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-            
-            const eventList = document.getElementById('modal-event-list');
-            eventList.innerHTML = '';
-            const eventsForDay = (spaceData.calendarEvents || []).filter(e => e.date === dateStr);
-            
-            if(eventsForDay.length > 0) {
-                 eventsForDay.forEach(event => {
-                    const eventEl = document.createElement('div');
-                    eventEl.className = 'bg-gray-100 p-2 rounded-lg flex justify-between items-center';
-                    eventEl.innerHTML = `<span>${event.title}</span>`;
-                    eventList.appendChild(eventEl);
-                });
-            } else {
-                eventList.innerHTML = '<p class="text-gray-500 text-center">No events for this day.</p>';
-            }
-            
-            eventModal.classList.remove('hidden');
-            setTimeout(() => eventModal.classList.add('visible'), 10);
+        document.getElementById('add-todo-btn').onclick = () => add('todo-input', 'todoList');
+        document.getElementById('todo-input').onkeypress = e => e.key === 'Enter' && add('todo-input', 'todoList');
+        document.getElementById('clear-todos-btn').onclick = () => update({ todoList: spaceData.todoList.filter(i => !i.completed) });
+
+        document.getElementById('prev-month-btn').onclick = () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCal(); };
+        document.getElementById('next-month-btn').onclick = () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCal(); };
+
+        function openModal(str) {
+            selectedDateStr = str;
+            const modal = document.getElementById('event-modal');
+            document.getElementById('modal-date-display').textContent = new Date(str + 'T12:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+            const list = document.getElementById('modal-event-list');
+            const events = (spaceData.calendarEvents||[]).filter(e => e.date === str);
+            list.innerHTML = events.length ? events.map(e => `<div class="bg-gray-100 p-2 rounded-lg">${e.title}</div>`).join('') : '<p class="text-gray-500 text-center">No events</p>';
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('visible'), 10);
         }
 
-        function closeEventModal() {
-            eventModal.classList.remove('visible');
-            setTimeout(() => eventModal.classList.add('hidden'), 300);
-        }
-
-        eventModal.addEventListener('click', (e) => (e.target === eventModal) && closeEventModal());
-
-        function addCalendarEvent() {
-            const input = document.getElementById('event-input');
-            const title = input.value.trim();
+        document.getElementById('event-modal').onclick = e => { if (e.target.id === 'event-modal') { e.target.classList.remove('visible'); setTimeout(() => e.target.classList.add('hidden'), 300); } };
+        document.getElementById('add-event-btn').onclick = () => {
+            const input = document.getElementById('event-input'), title = input.value.trim();
             if (!title || !selectedDateStr) return;
-            const newEvent = { id: Date.now().toString(), title, date: selectedDateStr };
-            const currentEvents = spaceData.calendarEvents || [];
-            updateSpace({ calendarEvents: [...currentEvents, newEvent] });
+            update({ calendarEvents: [...(spaceData.calendarEvents||[]), { id: Date.now()+'', title, date: selectedDateStr }] });
             input.value = '';
-        }
-
-        document.getElementById('add-event-btn').addEventListener('click', addCalendarEvent);
-        document.getElementById('event-input').addEventListener('keypress', (e) => e.key === 'Enter' && addCalendarEvent());
+        };
+        document.getElementById('event-input').onkeypress = e => e.key === 'Enter' && document.getElementById('add-event-btn').click();
     </script>
 </body>
 </html>
